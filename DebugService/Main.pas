@@ -5,7 +5,8 @@ interface
 uses
   Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants, System.Classes,
   Vcl.Graphics, Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Vcl.StdCtrls, Vcl.ComCtrls,
-  Vcl.Buttons, Vcl.ExtCtrls, System.Types, ServiceProcess;
+  Vcl.Buttons, Vcl.ExtCtrls, System.Types, ServiceProcess, IdBaseComponent,
+  IdComponent, IdUDPBase, IdUDPServer;
 
 type
   TfrmMain = class(TForm)
@@ -29,7 +30,7 @@ type
     FServiceControllerManager: TServiceControllerManager;
     procedure StartService;
     procedure StopService;
-    procedure Logar(const pMessage: string);
+    procedure Logar(const AText: string);
   public
     { Public declarations }
     procedure AfterConstruction; override;
@@ -40,6 +41,9 @@ var
 
 implementation
 
+uses
+  ServiceLog;
+
 {$R *.dfm}
 
 { TfrmMain }
@@ -48,7 +52,9 @@ procedure TfrmMain.AfterConstruction;
 begin
   inherited;
   FServiceControllerManager := TServiceControllerManager.Create;
-  FServiceControllerManager.OnLog := Logar;
+
+  Log.OnTraceDebug := Logar;
+  Log.TraceFileName := 'ValterLog.txt';
 end;
 
 procedure TfrmMain.btnStartServiceClick(Sender: TObject);
@@ -105,9 +111,9 @@ begin
   end;
 end;
 
-procedure TfrmMain.Logar(const pMessage: string);
+procedure TfrmMain.Logar(const AText: string);
 begin
-  redtLog.Lines.Add(pMessage);
+  redtLog.Lines.Add(AText);
 end;
 
 end.

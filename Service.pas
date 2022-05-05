@@ -30,7 +30,7 @@ var
 implementation
 
 uses
-  System.Win.Registry;
+  System.Win.Registry, ServiceLog;
 
 {$R *.dfm}
 
@@ -65,6 +65,8 @@ end;
 procedure TsrvValter.Logar(const pMessage: string);
 begin
   LogMessage(pMessage, EVENTLOG_INFORMATION_TYPE, 0, 10500);
+
+
 end;
 
 procedure TsrvValter.ServiceAfterInstall(Sender: TService);
@@ -84,7 +86,9 @@ end;
 procedure TsrvValter.ServiceCreate(Sender: TObject);
 begin
   FServiceControllerManager := TServiceControllerManager.Create;
-  FServiceControllerManager.OnLog := Logar;
+
+  Log.OnTraceDebug := Logar;
+  Log.TraceFileName := 'ValterLog.txt';
 end;
 
 procedure TsrvValter.ServiceDestroy(Sender: TObject);

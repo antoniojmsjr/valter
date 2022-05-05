@@ -11,47 +11,63 @@ type
   TServiceControllerCustom = class
   private
     { private declarations }
-    FOnLog: TOnlog;
   protected
     { protected declarations }
   public
     { public declarations }
     procedure Start; virtual; abstract;
     procedure Stop; virtual; abstract;
-    property OnLog: TOnlog read FOnLog write FOnLog;
   end;
 
   TServiceProcessCustom = class
   private
     { private declarations }
+  protected
+    { protected declarations }
+    procedure Log(const pMessage: string);
+  public
+    { public declarations }
+    procedure Start; virtual; Abstract;
+    procedure Stop; virtual; Abstract;
+  end;
+
+  TServiceProcessTimerCustom = class(TServiceProcessCustom)
+  private
+    { private declarations }
     FTimerExecute: TTimer;
-    FOnLog: TOnlog;
     procedure SetTimerInterval(const Value: Integer);
     function GetTimerInterval: Integer;
     procedure OnTimerEvent(Sender: TObject);
     procedure OnTerminateEvent(Sender: TObject);
   protected
     { protected declarations }
-    procedure Log(const pMessage: string);
   public
     { public declarations }
     constructor Create;
     destructor Destroy; override;
-    procedure Start;
-    procedure Stop;
+    procedure Start; override;
+    procedure Stop; override;
     procedure Execute; virtual; Abstract;
     property TimerInterval: Integer read GetTimerInterval write SetTimerInterval;
-    property OnLog: TOnlog read FOnLog write FOnLog;
   end;
 
 implementation
 
 uses
-  System.SysUtils;
+  System.SysUtils, ServiceLog;
 
 {$REGION 'TServiceProcessCustom'}
 
-constructor TServiceProcessCustom.Create;
+procedure TServiceProcessCustom.Log(const pMessage: string);
+begin
+  ServiceLog.Log.Trace(pMessage);
+end;
+
+{$ENDREGION}
+
+{$REGION 'TServiceProcessTimerCustom'}
+
+constructor TServiceProcessTimerCustom.Create;
 begin
   FTimerExecute := TTimer.Create(nil);
   FTimerExecute.Interval := 5000; //5sg;
@@ -59,25 +75,19 @@ begin
   FTimerExecute.Enabled := False;
 end;
 
-destructor TServiceProcessCustom.Destroy;
+destructor TServiceProcessTimerCustom.Destroy;
 begin
   FTimerExecute.Enabled := False;
   FTimerExecute.Free;
   inherited Destroy;
 end;
 
-function TServiceProcessCustom.GetTimerInterval: Integer;
+function TServiceProcessTimerCustom.GetTimerInterval: Integer;
 begin
   Result := FTimerExecute.Interval;
 end;
 
-procedure TServiceProcessCustom.Log(const pMessage: string);
-begin
-  if Assigned(FOnLog) then
-    FOnLog(pMessage);
-end;
-
-procedure TServiceProcessCustom.SetTimerInterval(const Value: Integer);
+procedure TServiceProcessTimerCustom.SetTimerInterval(const Value: Integer);
 begin
   if (Value < 1) then //1sg
     FTimerExecute.Interval := 1000
@@ -85,7 +95,7 @@ begin
     FTimerExecute.Interval := (Value * 1000);
 end;
 
-procedure TServiceProcessCustom.OnTerminateEvent(Sender: TObject);
+procedure TServiceProcessTimerCustom.OnTerminateEvent(Sender: TObject);
 var
   lThreadException: Exception;
 begin
@@ -98,11 +108,11 @@ begin
     begin
       lThreadException := Exception(TThread(Sender).FatalException);
 
-      //lThreadException.Message;
+      Log(lThreadException.Message);
     end;
 end;
 
-procedure TServiceProcessCustom.OnTimerEvent(Sender: TObject);
+procedure TServiceProcessTimerCustom.OnTimerEvent(Sender: TObject);
 var
   lThreadExecute: TThread;
 begin
@@ -120,12 +130,12 @@ begin
   lThreadExecute.Start;
 end;
 
-procedure TServiceProcessCustom.Start;
+procedure TServiceProcessTimerCustom.Start;
 begin
   FTimerExecute.Enabled := True;
 end;
 
-procedure TServiceProcessCustom.Stop;
+procedure TServiceProcessTimerCustom.Stop;
 begin
   FTimerExecute.Enabled := False;
 end;

@@ -244,8 +244,9 @@ object frmMain: TfrmMain
         Font.Name = 'Lucida Console'
         Font.Style = []
         ParentFont = False
-        ScrollBars = ssVertical
+        ScrollBars = ssBoth
         TabOrder = 0
+        WantReturns = False
         Zoom = 100
       end
     end
