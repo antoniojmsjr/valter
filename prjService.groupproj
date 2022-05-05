@@ -1,0 +1,60 @@
+﻿<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+    <PropertyGroup>
+        <ProjectGuid>{2C4862E1-70E9-4C29-B0B6-9341683665DF}</ProjectGuid>
+    </PropertyGroup>
+    <ItemGroup>
+        <Projects Include="Source\Source.dproj">
+            <Dependencies/>
+        </Projects>
+        <Projects Include="srvService.dproj">
+            <Dependencies/>
+        </Projects>
+        <Projects Include="DebugService\DebugService.dproj">
+            <Dependencies/>
+        </Projects>
+    </ItemGroup>
+    <ProjectExtensions>
+        <Borland.Personality>Default.Personality.12</Borland.Personality>
+        <Borland.ProjectType/>
+        <BorlandProject>
+            <Default.Personality/>
+        </BorlandProject>
+    </ProjectExtensions>
+    <Target Name="Source">
+        <MSBuild Projects="Source\Source.dproj"/>
+    </Target>
+    <Target Name="Source:Clean">
+        <MSBuild Projects="Source\Source.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="Source:Make">
+        <MSBuild Projects="Source\Source.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="srvService">
+        <MSBuild Projects="srvService.dproj"/>
+    </Target>
+    <Target Name="srvService:Clean">
+        <MSBuild Projects="srvService.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="srvService:Make">
+        <MSBuild Projects="srvService.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="DebugService">
+        <MSBuild Projects="DebugService\DebugService.dproj"/>
+    </Target>
+    <Target Name="DebugService:Clean">
+        <MSBuild Projects="DebugService\DebugService.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="DebugService:Make">
+        <MSBuild Projects="DebugService\DebugService.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="Build">
+        <CallTarget Targets="Source;srvService;DebugService"/>
+    </Target>
+    <Target Name="Clean">
+        <CallTarget Targets="Source:Clean;srvService:Clean;DebugService:Clean"/>
+    </Target>
+    <Target Name="Make">
+        <CallTarget Targets="Source:Make;srvService:Make;DebugService:Make"/>
+    </Target>
+    <Import Project="$(BDS)\Bin\CodeGear.Group.Targets" Condition="Exists('$(BDS)\Bin\CodeGear.Group.Targets')"/>
+</Project>
