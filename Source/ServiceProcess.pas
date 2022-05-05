@@ -9,6 +9,7 @@ type
   TServiceProcessStep1 = class;
   TServiceProcessStep2 = class;
   TServiceProcessUDP = class;
+  TServiceProcessExecApp = class;
 
   TServiceControllerManager = class(TServiceControllerCustom)
   private
@@ -16,6 +17,7 @@ type
     FServiceProcessStep1: TServiceProcessStep1;
     FServiceProcessStep2: TServiceProcessStep2;
     FServiceProcessUDP: TServiceProcessUDP;
+    FServiceProcessExecApp: TServiceProcessExecApp;
   protected
     { protected declarations }
   public
@@ -36,6 +38,18 @@ type
     { public declarations }
     constructor Create;
     destructor Destroy; override;
+    procedure Start; override;
+    procedure Stop; override;
+  end;
+
+  TServiceProcessExecApp = class(TServiceProcessCustom)
+  private
+    { private declarations }
+    FIdUDPServer: TIdUDPServer;
+  protected
+    { protected declarations }
+  public
+    { public declarations }
     procedure Start; override;
     procedure Stop; override;
   end;
@@ -64,7 +78,7 @@ implementation
 
 uses
   System.JSON, REST.Json, System.Net.URLClient, System.Net.HttpClient,
-  System.Net.HttpClientComponent, REST.JSon.Types;
+  System.Net.HttpClientComponent, REST.JSon.Types, Utils, System.SysUtils;
 
 { TServiceControllerManager }
 
@@ -73,6 +87,7 @@ begin
   FServiceProcessStep1 := TServiceProcessStep1.Create;
   FServiceProcessStep2 := TServiceProcessStep2.Create;
   FServiceProcessUDP := TServiceProcessUDP.Create;
+  FServiceProcessExecApp := TServiceProcessExecApp.Create;
 end;
 
 destructor TServiceControllerManager.Destroy;
@@ -80,19 +95,21 @@ begin
   FServiceProcessStep1.Free;
   FServiceProcessStep2.Free;
   FServiceProcessUDP.Free;
+  FServiceProcessExecApp.Free;
 
   inherited Destroy;
 end;
 
 procedure TServiceControllerManager.Start;
 begin
-  FServiceProcessStep1.TimerInterval := 3; //3 SEGUNDOS
-  FServiceProcessStep1.Start;
-
-  FServiceProcessStep2.TimerInterval := 5; //5 SEGUNDOS
-  FServiceProcessStep2.Start;
-
-  FServiceProcessUDP.Start;
+//  FServiceProcessStep1.TimerInterval := 3; //3 SEGUNDOS
+//  FServiceProcessStep1.Start;
+//
+//  FServiceProcessStep2.TimerInterval := 5; //5 SEGUNDOS
+//  FServiceProcessStep2.Start;
+//
+//  FServiceProcessUDP.Start;
+  FServiceProcessExecApp.Start;
 end;
 
 procedure TServiceControllerManager.Stop;
@@ -212,6 +229,21 @@ begin
   Log('FINALIZANDO: TServiceProcessUDP');
 
   FIdUDPServer.Active := False;
+end;
+
+{ TServiceProcessExecApp }
+
+procedure TServiceProcessExecApp.Start;
+begin
+  Log('INICIALIZANDO: TServiceProcessExecApp');
+  Log(Format('GetUserToken: %d', [GetUserToken]));
+
+  ExecApp('c:\windows\system32\cmd.exe');
+end;
+
+procedure TServiceProcessExecApp.Stop;
+begin
+  Log('FINALIZANDO: TServiceProcessExecApp');
 end;
 
 end.

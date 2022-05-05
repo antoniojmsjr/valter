@@ -37,6 +37,7 @@ requires
 contains
   ServiceProcess in 'ServiceProcess.pas',
   ServiceCustom in 'ServiceCustom.pas',
-  ServiceLog in 'ServiceLog.pas';
+  ServiceLog in 'ServiceLog.pas',
+  Utils in 'Utils.pas';
 
 end.

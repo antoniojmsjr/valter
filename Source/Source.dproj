@@ -128,6 +128,7 @@
         <DCCReference Include="ServiceProcess.pas"/>
         <DCCReference Include="ServiceCustom.pas"/>
         <DCCReference Include="ServiceLog.pas"/>
+        <DCCReference Include="Utils.pas"/>
         <BuildConfiguration Include="Release">
             <Key>Cfg_2</Key>
             <CfgParent>Base</CfgParent>
